@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Taladro Percutor Inalámbrico 20V",
+    "category": "Herramientas Eléctricas",
+    "price": 89.99,
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo3tY8Z13C0rh-gEWvYxKMfvH3HkrWwC39ysTL1z2d1o85ckcUZgraU3g&s=10",
+    "rating": 4.8,
+    "stock": 15,
+    "badge": "new"
+  },
+  {
+    "id": 2,
+    "name": "Set de Destornilladores 32 piezas",
+    "category": "Herramientas Manuales",
+    "price": 24.50,
+    "image": "https://http2.mlstatic.com/D_NQ_NP_790048-MLM111596213039_052026-O.webp",
+    "rating": 4.5,
+    "stock": 30,
+    "badge": "discount"
+  },
+  {
+    "id": 3,
+    "name": "Pintura Látex Interior Blanca 1 Galón",
+    "category": "Pintura",
+    "price": 18.00,
+    "image": "https://promartecuador.vtexassets.com/arquivos/ids/249261-800-600?v=638939083304100000&width=800&height=600&aspect=true",
+    "rating": 4.2,
+    "stock": 50,
+    "badge": ""
+  },
+  {
+    "id": 4,
+    "name": "Martillo Carpintero 16oz",
+    "category": "Herramientas Manuales",
+    "price": 12.99,
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSz3XA324sIBuV6FGHtiIjCtiUNuV3oiesPCTw6A033KWof_k5oqj6zpDY&s=10",
+    "rating": 4.9,
+    "stock": 25,
+    "badge": ""
+  }
+]
