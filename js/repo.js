@@ -146,8 +146,8 @@ export const fetchProducts = async () => {
       cachedProducts = [
         {
           "id": 1,
-          "name": "Taladro Percutor Inalámbrico 20V",
-          "category": "Herramientas Eléctricas",
+          "name": "Set de Destornilladores",
+          "category": "Herramientas Manuales",
           "price": 89.99,
           "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo3tY8Z13C0rh-gEWvYxKMfvH3HkrWwC39ysTL1z2d1o85ckcUZgraU3g&s=10",
           "rating": 4.8,
@@ -156,8 +156,8 @@ export const fetchProducts = async () => {
         },
         {
           "id": 2,
-          "name": "Set de Destornilladores 32 piezas",
-          "category": "Herramientas Manuales",
+          "name": "Manguera extensible de jardín",
+          "category": "Jardín y exteriores",
           "price": 24.50,
           "image": "https://http2.mlstatic.com/D_NQ_NP_790048-MLM111596213039_052026-O.webp",
           "rating": 4.5,
