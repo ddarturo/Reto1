@@ -21,6 +21,19 @@ const storage = {
     }
   },
 
+  // Guarda y obtiene los favoritos en LocalStorage
+  saveFavorites(favoritesArray) {
+    localStorage.setItem('ferrocasa_favorites', JSON.stringify(favoritesArray));
+  },
+  getFavorites() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem('ferrocasa_favorites'));
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  },
+
   // --- SESSION STORAGE ---
   // Guarda información que solo durará mientras la pestaña del navegador esté abierta
   setLastUpdate() {
@@ -293,6 +306,7 @@ const cart = new ShoppingCart();
 // --- File: js/view.js ---
 
 
+
 // Función para prevenir inyección de HTML (XSS)
 const escapeHTML = (str) => {
   return String(str).replace(/[&<>"']/g, (match) => {
@@ -305,6 +319,9 @@ const escapeHTML = (str) => {
  * @param {Array} products - Lista de productos (objetos) a mostrar.
  */
 const renderProducts = (products) => {
+  // Obtenemos los favoritos guardados
+  const favorites = storage.getFavorites();
+
   // Buscamos el elemento HTML donde inyectaremos las tarjetas de producto
   const grid = document.getElementById('productsGrid');
   grid.innerHTML = ''; // Limpiamos el contenedor antes de empezar
@@ -318,13 +335,15 @@ const renderProducts = (products) => {
     // 2. Si el producto tiene un "badge" (etiqueta como NUEVO o OFERTA), creamos el HTML para mostrarlo
     const badgeHtml = product.badge ? `<span class="product-badge ${product.badge}">${product.badge === 'new' ? 'NUEVO' : 'OFERTA'}</span>` : '';
 
+    const isFav = favorites.includes(product.id);
+
     // 3. Escribimos la estructura de la tarjeta (HTML) mezclada con los datos del producto (Template Literals de JS)
     col.innerHTML = `
       <article class="product-card h-100 d-flex flex-column" aria-label="${escapeHTML(product.name)}">
         <div class="product-image">
           ${badgeHtml}
-          <button class="wishlist" aria-label="Añadir a favoritos">
-            <i class="bi bi-heart" aria-hidden="true"></i>
+          <button class="wishlist fav-btn" data-id="${product.id}" aria-label="Añadir a favoritos">
+            <i class="bi ${isFav ? 'bi-heart-fill text-danger' : 'bi-heart'}" aria-hidden="true"></i>
           </button>
           <img src="${escapeHTML(product.image)}" alt="Imagen de ${escapeHTML(product.name)}" loading="lazy">
         </div>
@@ -345,6 +364,20 @@ const renderProducts = (products) => {
         </div>
       </article>
     `;
+
+    // Botón de favoritos
+    const favBtn = col.querySelector('.fav-btn');
+    favBtn.addEventListener('click', () => {
+      let currentFavs = storage.getFavorites();
+      if (currentFavs.includes(product.id)) {
+        currentFavs = currentFavs.filter(id => id !== product.id);
+        favBtn.innerHTML = '<i class="bi bi-heart" aria-hidden="true"></i>';
+      } else {
+        currentFavs.push(product.id);
+        favBtn.innerHTML = '<i class="bi bi-heart-fill text-danger" aria-hidden="true"></i>';
+      }
+      storage.saveFavorites(currentFavs);
+    });
 
     // 4. Buscamos el botón "Añadir" que acabamos de crear y le asignamos la función de clic
     const btn = col.querySelector('.add-to-cart-btn');
@@ -626,16 +659,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // --- LÓGICA DE CATEGORÍAS ---
+  let activeCategory = null;
   const catButtons = document.querySelectorAll('.cat-filter-btn');
   catButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
       const selectedCategory = e.currentTarget.dataset.category;
       
-      // Filtramos la lista de todos los productos
-      const filtered = allProducts.filter(p => p.category.includes(selectedCategory));
-      
-      // Volvemos a dibujar
-      renderProducts(filtered.length > 0 ? filtered : allProducts);
+      if (activeCategory === selectedCategory) {
+        // Si ya estaba seleccionada, quitamos el filtro
+        activeCategory = null;
+        renderProducts(allProducts);
+      } else {
+        // Si es una categoría nueva, aplicamos el filtro
+        activeCategory = selectedCategory;
+        const filtered = allProducts.filter(p => p.category.includes(selectedCategory));
+        renderProducts(filtered.length > 0 ? filtered : allProducts);
+      }
       
       // Hacemos un scroll suave al catálogo
       document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth' });

@@ -20,6 +20,19 @@ export const storage = {
     }
   },
 
+  // Guarda y obtiene los favoritos en LocalStorage
+  saveFavorites(favoritesArray) {
+    localStorage.setItem('ferrocasa_favorites', JSON.stringify(favoritesArray));
+  },
+  getFavorites() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem('ferrocasa_favorites'));
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  },
+
   // --- SESSION STORAGE ---
   // Guarda información que solo durará mientras la pestaña del navegador esté abierta
   setLastUpdate() {

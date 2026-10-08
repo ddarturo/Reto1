@@ -167,16 +167,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // --- LÓGICA DE CATEGORÍAS ---
+  let activeCategory = null;
   const catButtons = document.querySelectorAll('.cat-filter-btn');
   catButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
       const selectedCategory = e.currentTarget.dataset.category;
       
-      // Filtramos la lista de todos los productos
-      const filtered = allProducts.filter(p => p.category.includes(selectedCategory));
-      
-      // Volvemos a dibujar
-      renderProducts(filtered.length > 0 ? filtered : allProducts);
+      if (activeCategory === selectedCategory) {
+        // Si ya estaba seleccionada, quitamos el filtro
+        activeCategory = null;
+        renderProducts(allProducts);
+      } else {
+        // Si es una categoría nueva, aplicamos el filtro
+        activeCategory = selectedCategory;
+        const filtered = allProducts.filter(p => p.category.includes(selectedCategory));
+        renderProducts(filtered.length > 0 ? filtered : allProducts);
+      }
       
       // Hacemos un scroll suave al catálogo
       document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth' });

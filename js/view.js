@@ -1,4 +1,5 @@
 import { cart } from './cart.js';
+import { storage } from './repo.js';
 
 // Función para prevenir inyección de HTML (XSS)
 const escapeHTML = (str) => {
@@ -12,6 +13,9 @@ const escapeHTML = (str) => {
  * @param {Array} products - Lista de productos (objetos) a mostrar.
  */
 export const renderProducts = (products) => {
+  // Obtenemos los favoritos guardados
+  const favorites = storage.getFavorites();
+
   // Buscamos el elemento HTML donde inyectaremos las tarjetas de producto
   const grid = document.getElementById('productsGrid');
   grid.innerHTML = ''; // Limpiamos el contenedor antes de empezar
@@ -25,13 +29,15 @@ export const renderProducts = (products) => {
     // 2. Si el producto tiene un "badge" (etiqueta como NUEVO o OFERTA), creamos el HTML para mostrarlo
     const badgeHtml = product.badge ? `<span class="product-badge ${product.badge}">${product.badge === 'new' ? 'NUEVO' : 'OFERTA'}</span>` : '';
 
+    const isFav = favorites.includes(product.id);
+
     // 3. Escribimos la estructura de la tarjeta (HTML) mezclada con los datos del producto (Template Literals de JS)
     col.innerHTML = `
       <article class="product-card h-100 d-flex flex-column" aria-label="${escapeHTML(product.name)}">
         <div class="product-image">
           ${badgeHtml}
-          <button class="wishlist" aria-label="Añadir a favoritos">
-            <i class="bi bi-heart" aria-hidden="true"></i>
+          <button class="wishlist fav-btn" data-id="${product.id}" aria-label="Añadir a favoritos">
+            <i class="bi ${isFav ? 'bi-heart-fill text-danger' : 'bi-heart'}" aria-hidden="true"></i>
           </button>
           <img src="${escapeHTML(product.image)}" alt="Imagen de ${escapeHTML(product.name)}" loading="lazy">
         </div>
@@ -52,6 +58,20 @@ export const renderProducts = (products) => {
         </div>
       </article>
     `;
+
+    // Botón de favoritos
+    const favBtn = col.querySelector('.fav-btn');
+    favBtn.addEventListener('click', () => {
+      let currentFavs = storage.getFavorites();
+      if (currentFavs.includes(product.id)) {
+        currentFavs = currentFavs.filter(id => id !== product.id);
+        favBtn.innerHTML = '<i class="bi bi-heart" aria-hidden="true"></i>';
+      } else {
+        currentFavs.push(product.id);
+        favBtn.innerHTML = '<i class="bi bi-heart-fill text-danger" aria-hidden="true"></i>';
+      }
+      storage.saveFavorites(currentFavs);
+    });
 
     // 4. Buscamos el botón "Añadir" que acabamos de crear y le asignamos la función de clic
     const btn = col.querySelector('.add-to-cart-btn');
