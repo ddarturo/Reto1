@@ -144,6 +144,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const cartCanvas = document.getElementById('cartCanvas');
         const bsOffcanvas = bootstrap.Offcanvas.getInstance(cartCanvas);
         if (bsOffcanvas) bsOffcanvas.hide();
+        
+        // Devolver el foco al inicio para no perderlo
+        document.getElementById('inicio').focus();
       }
     });
   }

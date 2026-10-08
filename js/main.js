@@ -318,7 +318,7 @@ const renderProducts = (products) => {
       <article class="product-card h-100 d-flex flex-column" aria-label="${escapeHTML(product.name)}">
         <div class="product-image">
           ${badgeHtml}
-          <button class="wishlist" aria-label="Añadir a favoritos" tabindex="0">
+          <button class="wishlist" aria-label="Añadir a favoritos">
             <i class="bi bi-heart" aria-hidden="true"></i>
           </button>
           <img src="${escapeHTML(product.image)}" alt="Imagen de ${escapeHTML(product.name)}" loading="lazy">
@@ -596,6 +596,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const cartCanvas = document.getElementById('cartCanvas');
         const bsOffcanvas = bootstrap.Offcanvas.getInstance(cartCanvas);
         if (bsOffcanvas) bsOffcanvas.hide();
+        
+        // Devolver el foco al inicio para no perderlo
+        document.getElementById('inicio').focus();
       }
     });
   }

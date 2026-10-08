@@ -30,7 +30,7 @@ export const renderProducts = (products) => {
       <article class="product-card h-100 d-flex flex-column" aria-label="${escapeHTML(product.name)}">
         <div class="product-image">
           ${badgeHtml}
-          <button class="wishlist" aria-label="Añadir a favoritos" tabindex="0">
+          <button class="wishlist" aria-label="Añadir a favoritos">
             <i class="bi bi-heart" aria-hidden="true"></i>
           </button>
           <img src="${escapeHTML(product.image)}" alt="Imagen de ${escapeHTML(product.name)}" loading="lazy">
