@@ -16,3 +16,4 @@ files.forEach(file => {
 
 fs.writeFileSync('js/main.js', mainJs);
 console.log('js/main.js rebuilt successfully!');
+

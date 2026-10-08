@@ -60,7 +60,7 @@ const storage = {
 // Es una base de datos más avanzada que vive en el navegador. 
 // Aquí guardaremos los productos en modo "caché" por si se pierde la conexión o el fetch falla.
 const db = {
-  dbName: 'FerroCasaDB',
+  dbName: 'FerroCasaDB2',
   dbVersion: 1,
   storeName: 'products',
   
@@ -153,7 +153,7 @@ const fetchProducts = async () => {
         {
           "id": 1,
           "name": "Set de Destornilladores",
-          "category": "Herramientas Manuales",
+          "category": "Herramientas",
           "price": 89.99,
           "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo3tY8Z13C0rh-gEWvYxKMfvH3HkrWwC39ysTL1z2d1o85ckcUZgraU3g&s=10",
           "rating": 4.8,
@@ -163,7 +163,7 @@ const fetchProducts = async () => {
         {
           "id": 2,
           "name": "Manguera extensible de jardín",
-          "category": "Jardín y exteriores",
+          "category": "Jardín",
           "price": 24.50,
           "image": "https://http2.mlstatic.com/D_NQ_NP_790048-MLM111596213039_052026-O.webp",
           "rating": 4.5,
@@ -183,7 +183,7 @@ const fetchProducts = async () => {
         {
           "id": 4,
           "name": "Martillo Carpintero 16oz",
-          "category": "Herramientas Manuales",
+          "category": "Construcción",
           "price": 12.99,
           "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSz3XA324sIBuV6FGHtiIjCtiUNuV3oiesPCTw6A033KWof_k5oqj6zpDY&s=10",
           "rating": 4.9,
@@ -471,7 +471,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // --- ÚLTIMA ACTUALIZACIÓN ---
   // Obtenemos la hora actual (simulando una sesión) y la imprimimos en el pie de página
   const lastUpdate = storage.setLastUpdate();
-  document.getElementById('lastUpdateText').textContent = `Última actualización: ${lastUpdate}`;
+  const lastUpdateEl = document.getElementById('lastUpdateText');
+  if (lastUpdateEl) {
+    lastUpdateEl.textContent = `Última actualización: ${lastUpdate}`;
+  }
 
   // --- COOKIES ---
   // Configuramos una cookie de prueba. Usamos un bloque try-catch por si 

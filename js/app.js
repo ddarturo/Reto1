@@ -12,7 +12,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // --- ÚLTIMA ACTUALIZACIÓN ---
   // Obtenemos la hora actual (simulando una sesión) y la imprimimos en el pie de página
   const lastUpdate = storage.setLastUpdate();
-  document.getElementById('lastUpdateText').textContent = `Última actualización: ${lastUpdate}`;
+  const lastUpdateEl = document.getElementById('lastUpdateText');
+  if (lastUpdateEl) {
+    lastUpdateEl.textContent = `Última actualización: ${lastUpdate}`;
+  }
 
   // --- COOKIES ---
   // Configuramos una cookie de prueba. Usamos un bloque try-catch por si 
