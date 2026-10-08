@@ -198,7 +198,7 @@ const fetchProducts = async () => {
 
 
 // --- File: js/cart.js ---
-{ storage } from './repo.js';
+
 
 /**
  * Clase ShoppingCart (Carrito de Compras)
@@ -291,7 +291,7 @@ const cart = new ShoppingCart();
 
 
 // --- File: js/view.js ---
-{ cart } from './cart.js';
+
 
 // Función para prevenir inyección de HTML (XSS)
 const escapeHTML = (str) => {
@@ -457,9 +457,9 @@ const renderCart = (items) => {
 
 
 // --- File: js/app.js ---
-{ fetchProducts, storage } from './repo.js';
-{ cart } from './cart.js';
-{ renderProducts, renderCart } from './view.js';
+
+
+
 
 /**
  * app.js es el punto de entrada principal. 
