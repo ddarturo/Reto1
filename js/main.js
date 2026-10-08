@@ -1,3 +1,4 @@
+// --- File: js/repo.js ---
 // repo.js
 // Este archivo maneja la obtención de datos (desde el JSON) y la persistencia o guardado (LocalStorage, IndexedDB, Cookies, SessionStorage)
 
@@ -196,6 +197,8 @@ const fetchProducts = async () => {
 };
 
 
+// --- File: js/cart.js ---
+{ storage } from './repo.js';
 
 /**
  * Clase ShoppingCart (Carrito de Compras)
@@ -287,6 +290,8 @@ class ShoppingCart {
 const cart = new ShoppingCart();
 
 
+// --- File: js/view.js ---
+{ cart } from './cart.js';
 
 // Función para prevenir inyección de HTML (XSS)
 const escapeHTML = (str) => {
@@ -451,8 +456,10 @@ const renderCart = (items) => {
 };
 
 
-
-
+// --- File: js/app.js ---
+{ fetchProducts, storage } from './repo.js';
+{ cart } from './cart.js';
+{ renderProducts, renderCart } from './view.js';
 
 /**
  * app.js es el punto de entrada principal. 
@@ -604,13 +611,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // --- OBTENCIÓN Y RENDERIZADO DEL CATÁLOGO ---
+  let allProducts = [];
   try {
     // Llamamos a la función asíncrona que va a descargar el archivo JSON
-    const products = await fetchProducts();
-    renderProducts(products); // Si es exitoso, los pintamos en pantalla
+    allProducts = await fetchProducts();
+    renderProducts(allProducts); // Si es exitoso, los pintamos en pantalla
   } catch (error) {
     console.error('Critical error loading products:', error);
     // Si ocurre un desastre total, mostramos el contenedor vacío para que no colapse
     renderProducts([]);
   }
+
+  // --- LÓGICA DE CATEGORÍAS ---
+  const catButtons = document.querySelectorAll('.cat-filter-btn');
+  catButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const selectedCategory = e.currentTarget.dataset.category;
+      
+      // Filtramos la lista de todos los productos
+      const filtered = allProducts.filter(p => p.category.includes(selectedCategory));
+      
+      // Volvemos a dibujar
+      renderProducts(filtered.length > 0 ? filtered : allProducts);
+      
+      // Hacemos un scroll suave al catálogo
+      document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth' });
+    });
+  });
 });
+
+
