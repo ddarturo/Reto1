@@ -11,8 +11,13 @@ export const storage = {
   
   // Obtiene el carrito guardado
   getCart() {
-    // Convierte el texto guardado de vuelta a un arreglo o devuelve un arreglo vacío [] si no hay nada
-    return JSON.parse(localStorage.getItem('ferrocasa_cart')) || [];
+    try {
+      const parsed = JSON.parse(localStorage.getItem('ferrocasa_cart'));
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      console.error('Error al parsear el carrito desde localStorage:', e);
+      return [];
+    }
   },
 
   // --- SESSION STORAGE ---

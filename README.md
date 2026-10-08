@@ -12,10 +12,8 @@ El proyecto está estructurado de manera modular para separar responsabilidades:
 - `data/`:
   - `productos.json`: Catálogo de productos simulando una base de datos u API local.
 - `js/`:
-  - `app.js`: Script principal y punto de entrada. Maneja la inicialización y la validación del formulario de contacto.
-  - `repo.js`: Se encarga de la obtención de datos (fetch) y la persistencia (LocalStorage, SessionStorage, IndexedDB y Cookies).
-  - `view.js`: Contiene la lógica para renderizar dinámicamente el catálogo de productos y el carrito de compras en el DOM.
-  - `cart.js`: Contiene la lógica de negocio del carrito (agregar, eliminar, actualizar cantidades y calcular totales) utilizando un patrón observador.
+  - `main.js`: Es el único punto de entrada cargado en el HTML. Se generó combinando la lógica de los archivos fuente (`app.js`, `repo.js`, `view.js` y `cart.js`) en un solo script tradicional (`<script src="js/main.js"></script>`) para sortear el bloqueo de seguridad (CORS) que aplican los navegadores cuando se usa `type="module"` mediante el protocolo `file://`.
+  - `app.js`, `repo.js`, `view.js`, `cart.js`: Archivos de desarrollo (fuentes) que organizan la lógica de negocio en módulos separados.
 
 ## 🛠️ Explicación Técnica
 

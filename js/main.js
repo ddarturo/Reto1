@@ -11,8 +11,13 @@ const storage = {
   
   // Obtiene el carrito guardado
   getCart() {
-    // Convierte el texto guardado de vuelta a un arreglo o devuelve un arreglo vacío [] si no hay nada
-    return JSON.parse(localStorage.getItem('ferrocasa_cart')) || [];
+    try {
+      const parsed = JSON.parse(localStorage.getItem('ferrocasa_cart'));
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      console.error('Error al parsear el carrito desde localStorage:', e);
+      return [];
+    }
   },
 
   // --- SESSION STORAGE ---
@@ -229,10 +234,16 @@ class ShoppingCart {
       // Si ya existe, simplemente le sumamos 1 a la cantidad (siempre que haya stock suficiente)
       if (existing.quantity < product.stock) {
         existing.quantity += 1;
+      } else {
+        alert('Lo sentimos, no hay más stock disponible de este producto.');
       }
     } else {
-      // Si no existe, lo agregamos como un nuevo elemento con cantidad = 1
-      this.items.push({ ...product, quantity: 1 });
+      // Si no existe, comprobamos que el producto tenga stock disponible
+      if (product.stock > 0) {
+        this.items.push({ ...product, quantity: 1 });
+      } else {
+        alert('Lo sentimos, este producto está agotado.');
+      }
     }
     
     // Avisamos a la pantalla que el carrito se modificó
@@ -277,6 +288,13 @@ const cart = new ShoppingCart();
 
 
 
+// Función para prevenir inyección de HTML (XSS)
+const escapeHTML = (str) => {
+  return String(str).replace(/[&<>"']/g, (match) => {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[match];
+  });
+};
+
 /**
  * Función encargada de dibujar los productos del catálogo en la pantalla.
  * @param {Array} products - Lista de productos (objetos) a mostrar.
@@ -297,25 +315,25 @@ const renderProducts = (products) => {
 
     // 3. Escribimos la estructura de la tarjeta (HTML) mezclada con los datos del producto (Template Literals de JS)
     col.innerHTML = `
-      <article class="product-card h-100 d-flex flex-column" aria-label="${product.name}">
+      <article class="product-card h-100 d-flex flex-column" aria-label="${escapeHTML(product.name)}">
         <div class="product-image">
           ${badgeHtml}
           <button class="wishlist" aria-label="Añadir a favoritos" tabindex="0">
             <i class="bi bi-heart" aria-hidden="true"></i>
           </button>
-          <img src="${product.image}" alt="Imagen de ${product.name}" loading="lazy">
+          <img src="${escapeHTML(product.image)}" alt="Imagen de ${escapeHTML(product.name)}" loading="lazy">
         </div>
         <div class="product-body flex-grow-1">
-          <small>${product.category}</small>
-          <h3>${product.name}</h3>
-          <div class="rating" aria-label="Calificación ${product.rating} de 5">
+          <small>${escapeHTML(product.category)}</small>
+          <h3>${escapeHTML(product.name)}</h3>
+          <div class="rating" aria-label="Calificación ${escapeHTML(product.rating)} de 5">
             <i class="bi bi-star-fill"></i>
-            <span>${product.rating}</span>
+            <span>${escapeHTML(product.rating)}</span>
           </div>
-          <p class="stock">Stock disponible: ${product.stock}</p>
+          <p class="stock">Stock disponible: ${escapeHTML(product.stock)}</p>
           <div class="product-footer">
-            <strong>$${product.price.toFixed(2)}</strong> <!-- toFixed(2) asegura que se muestren 2 decimales -->
-            <button class="add-to-cart-btn btn btn-coral" data-id="${product.id}" aria-label="Añadir ${product.name} al carrito">
+            <strong>$${Number(product.price).toFixed(2)}</strong> <!-- toFixed(2) asegura que se muestren 2 decimales -->
+            <button class="add-to-cart-btn btn btn-coral" data-id="${escapeHTML(product.id)}" aria-label="Añadir ${escapeHTML(product.name)} al carrito">
               <i class="bi bi-cart-plus" aria-hidden="true"></i> Añadir
             </button>
           </div>
@@ -377,19 +395,19 @@ const renderCart = (items) => {
     const itemEl = document.createElement('div');
     itemEl.className = 'cart-line';
     itemEl.innerHTML = `
-      <img src="${item.image}" alt="${item.name}">
+      <img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.name)}">
       <div>
-        <h3>${item.name}</h3>
-        <small>$${item.price.toFixed(2)} c/u</small>
+        <h3>${escapeHTML(item.name)}</h3>
+        <small>$${Number(item.price).toFixed(2)} c/u</small>
         <div class="quantity-controls">
-          <button class="qty-btn" data-id="${item.id}" data-action="decrease" aria-label="Disminuir cantidad">-</button>
-          <span class="fw-bold" aria-live="polite">${item.quantity}</span>
-          <button class="qty-btn" data-id="${item.id}" data-action="increase" aria-label="Aumentar cantidad">+</button>
+          <button class="qty-btn" data-id="${escapeHTML(item.id)}" data-action="decrease" aria-label="Disminuir cantidad">-</button>
+          <span class="fw-bold" aria-live="polite">${escapeHTML(item.quantity)}</span>
+          <button class="qty-btn" data-id="${escapeHTML(item.id)}" data-action="increase" aria-label="Aumentar cantidad">+</button>
         </div>
       </div>
       <div class="text-end">
-        <div class="fw-bold">$${(item.price * item.quantity).toFixed(2)}</div>
-        <button class="remove-item mt-2" data-id="${item.id}" aria-label="Eliminar ${item.name} del carrito">
+        <div class="fw-bold">$${(Number(item.price) * Number(item.quantity)).toFixed(2)}</div>
+        <button class="remove-item mt-2" data-id="${escapeHTML(item.id)}" aria-label="Eliminar ${escapeHTML(item.name)} del carrito">
           <i class="bi bi-trash"></i> Eliminar
         </button>
       </div>
@@ -529,12 +547,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Pequeño truco de "Experiencia de Usuario": Si el usuario empieza a escribir de nuevo, 
-    // le borramos la alerta roja de error.
-    [nameInput, emailInput].forEach(input => {
-      input.addEventListener('input', () => {
-        input.classList.remove('is-invalid');
-        input.setAttribute('aria-invalid', 'false');
-      });
+    // reevaluamos el campo
+    nameInput.addEventListener('input', () => {
+      if (nameRegex.test(nameInput.value.trim())) {
+        nameInput.classList.remove('is-invalid');
+        nameInput.classList.add('is-valid');
+        nameInput.setAttribute('aria-invalid', 'false');
+      } else if (nameInput.value.trim() !== '') {
+        nameInput.classList.add('is-invalid');
+        nameInput.classList.remove('is-valid');
+        nameInput.setAttribute('aria-invalid', 'true');
+      }
+    });
+
+    emailInput.addEventListener('input', () => {
+      if (emailRegex.test(emailInput.value.trim())) {
+        emailInput.classList.remove('is-invalid');
+        emailInput.classList.add('is-valid');
+        emailInput.setAttribute('aria-invalid', 'false');
+      } else if (emailInput.value.trim() !== '') {
+        emailInput.classList.add('is-invalid');
+        emailInput.classList.remove('is-valid');
+        emailInput.setAttribute('aria-invalid', 'true');
+      }
     });
   }
 
@@ -546,6 +581,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderCart(cart.items);
   } catch (e) {
     console.error('Error rendering cart', e);
+  }
+
+  // --- LÓGICA DE PAGO (Demostración) ---
+  const checkoutBtn = document.getElementById('checkoutBtn');
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener('click', () => {
+      if (cart.items.length > 0) {
+        alert('¡Gracias por tu compra en FerroCasa! Esta es una versión de demostración.');
+        // Vaciar el carrito tras compra
+        cart.items = [];
+        cart.notify();
+        // Cerrar offcanvas
+        const cartCanvas = document.getElementById('cartCanvas');
+        const bsOffcanvas = bootstrap.Offcanvas.getInstance(cartCanvas);
+        if (bsOffcanvas) bsOffcanvas.hide();
+      }
+    });
   }
 
   // --- OBTENCIÓN Y RENDERIZADO DEL CATÁLOGO ---

@@ -37,10 +37,16 @@ class ShoppingCart {
       // Si ya existe, simplemente le sumamos 1 a la cantidad (siempre que haya stock suficiente)
       if (existing.quantity < product.stock) {
         existing.quantity += 1;
+      } else {
+        alert('Lo sentimos, no hay más stock disponible de este producto.');
       }
     } else {
-      // Si no existe, lo agregamos como un nuevo elemento con cantidad = 1
-      this.items.push({ ...product, quantity: 1 });
+      // Si no existe, comprobamos que el producto tenga stock disponible
+      if (product.stock > 0) {
+        this.items.push({ ...product, quantity: 1 });
+      } else {
+        alert('Lo sentimos, este producto está agotado.');
+      }
     }
     
     // Avisamos a la pantalla que el carrito se modificó

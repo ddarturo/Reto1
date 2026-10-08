@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
+  <a href="#inicio" class="skip-link">Saltar al contenido principal</a>
   <header class="site-header">
     <div class="topbar">
       <div class="container d-flex justify-content-between align-items-center gap-3">
@@ -36,7 +37,7 @@
             <a class="nav-link" href="#catalogo">Catálogo</a>
             <a class="nav-link" href="#contacto">Contacto</a>
             <button class="cart-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartCanvas" aria-controls="cartCanvas" aria-label="Abrir carrito">
-              <i class="bi bi-bag" aria-hidden="true"></i><span class="d-none d-xl-inline">Carrito</span><strong id="cartCount">0</strong>
+              <i class="bi bi-bag" aria-hidden="true"></i><span class="d-none d-xl-inline">Carrito</span><strong id="cartCount" aria-live="polite">0</strong>
             </button>
           </div>
         </div>
@@ -112,7 +113,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="locationModalLabel">Elige tu ubicación</h5>
+          <h2 class="modal-title h5" id="locationModalLabel">Elige tu ubicación</h2>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body p-0">

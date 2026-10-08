@@ -1,5 +1,12 @@
 import { cart } from './cart.js';
 
+// Función para prevenir inyección de HTML (XSS)
+const escapeHTML = (str) => {
+  return String(str).replace(/[&<>"']/g, (match) => {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[match];
+  });
+};
+
 /**
  * Función encargada de dibujar los productos del catálogo en la pantalla.
  * @param {Array} products - Lista de productos (objetos) a mostrar.
@@ -20,25 +27,25 @@ export const renderProducts = (products) => {
 
     // 3. Escribimos la estructura de la tarjeta (HTML) mezclada con los datos del producto (Template Literals de JS)
     col.innerHTML = `
-      <article class="product-card h-100 d-flex flex-column" aria-label="${product.name}">
+      <article class="product-card h-100 d-flex flex-column" aria-label="${escapeHTML(product.name)}">
         <div class="product-image">
           ${badgeHtml}
           <button class="wishlist" aria-label="Añadir a favoritos" tabindex="0">
             <i class="bi bi-heart" aria-hidden="true"></i>
           </button>
-          <img src="${product.image}" alt="Imagen de ${product.name}" loading="lazy">
+          <img src="${escapeHTML(product.image)}" alt="Imagen de ${escapeHTML(product.name)}" loading="lazy">
         </div>
         <div class="product-body flex-grow-1">
-          <small>${product.category}</small>
-          <h3>${product.name}</h3>
-          <div class="rating" aria-label="Calificación ${product.rating} de 5">
+          <small>${escapeHTML(product.category)}</small>
+          <h3>${escapeHTML(product.name)}</h3>
+          <div class="rating" aria-label="Calificación ${escapeHTML(product.rating)} de 5">
             <i class="bi bi-star-fill"></i>
-            <span>${product.rating}</span>
+            <span>${escapeHTML(product.rating)}</span>
           </div>
-          <p class="stock">Stock disponible: ${product.stock}</p>
+          <p class="stock">Stock disponible: ${escapeHTML(product.stock)}</p>
           <div class="product-footer">
-            <strong>$${product.price.toFixed(2)}</strong> <!-- toFixed(2) asegura que se muestren 2 decimales -->
-            <button class="add-to-cart-btn btn btn-coral" data-id="${product.id}" aria-label="Añadir ${product.name} al carrito">
+            <strong>$${Number(product.price).toFixed(2)}</strong> <!-- toFixed(2) asegura que se muestren 2 decimales -->
+            <button class="add-to-cart-btn btn btn-coral" data-id="${escapeHTML(product.id)}" aria-label="Añadir ${escapeHTML(product.name)} al carrito">
               <i class="bi bi-cart-plus" aria-hidden="true"></i> Añadir
             </button>
           </div>
@@ -100,19 +107,19 @@ export const renderCart = (items) => {
     const itemEl = document.createElement('div');
     itemEl.className = 'cart-line';
     itemEl.innerHTML = `
-      <img src="${item.image}" alt="${item.name}">
+      <img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.name)}">
       <div>
-        <h3>${item.name}</h3>
-        <small>$${item.price.toFixed(2)} c/u</small>
+        <h3>${escapeHTML(item.name)}</h3>
+        <small>$${Number(item.price).toFixed(2)} c/u</small>
         <div class="quantity-controls">
-          <button class="qty-btn" data-id="${item.id}" data-action="decrease" aria-label="Disminuir cantidad">-</button>
-          <span class="fw-bold" aria-live="polite">${item.quantity}</span>
-          <button class="qty-btn" data-id="${item.id}" data-action="increase" aria-label="Aumentar cantidad">+</button>
+          <button class="qty-btn" data-id="${escapeHTML(item.id)}" data-action="decrease" aria-label="Disminuir cantidad">-</button>
+          <span class="fw-bold" aria-live="polite">${escapeHTML(item.quantity)}</span>
+          <button class="qty-btn" data-id="${escapeHTML(item.id)}" data-action="increase" aria-label="Aumentar cantidad">+</button>
         </div>
       </div>
       <div class="text-end">
-        <div class="fw-bold">$${(item.price * item.quantity).toFixed(2)}</div>
-        <button class="remove-item mt-2" data-id="${item.id}" aria-label="Eliminar ${item.name} del carrito">
+        <div class="fw-bold">$${(Number(item.price) * Number(item.quantity)).toFixed(2)}</div>
+        <button class="remove-item mt-2" data-id="${escapeHTML(item.id)}" aria-label="Eliminar ${escapeHTML(item.name)} del carrito">
           <i class="bi bi-trash"></i> Eliminar
         </button>
       </div>

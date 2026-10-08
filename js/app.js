@@ -95,12 +95,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Pequeño truco de "Experiencia de Usuario": Si el usuario empieza a escribir de nuevo, 
-    // le borramos la alerta roja de error.
-    [nameInput, emailInput].forEach(input => {
-      input.addEventListener('input', () => {
-        input.classList.remove('is-invalid');
-        input.setAttribute('aria-invalid', 'false');
-      });
+    // reevaluamos el campo
+    nameInput.addEventListener('input', () => {
+      if (nameRegex.test(nameInput.value.trim())) {
+        nameInput.classList.remove('is-invalid');
+        nameInput.classList.add('is-valid');
+        nameInput.setAttribute('aria-invalid', 'false');
+      } else if (nameInput.value.trim() !== '') {
+        nameInput.classList.add('is-invalid');
+        nameInput.classList.remove('is-valid');
+        nameInput.setAttribute('aria-invalid', 'true');
+      }
+    });
+
+    emailInput.addEventListener('input', () => {
+      if (emailRegex.test(emailInput.value.trim())) {
+        emailInput.classList.remove('is-invalid');
+        emailInput.classList.add('is-valid');
+        emailInput.setAttribute('aria-invalid', 'false');
+      } else if (emailInput.value.trim() !== '') {
+        emailInput.classList.add('is-invalid');
+        emailInput.classList.remove('is-valid');
+        emailInput.setAttribute('aria-invalid', 'true');
+      }
     });
   }
 
@@ -112,6 +129,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderCart(cart.items);
   } catch (e) {
     console.error('Error rendering cart', e);
+  }
+
+  // --- LÓGICA DE PAGO (Demostración) ---
+  const checkoutBtn = document.getElementById('checkoutBtn');
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener('click', () => {
+      if (cart.items.length > 0) {
+        alert('¡Gracias por tu compra en FerroCasa! Esta es una versión de demostración.');
+        // Vaciar el carrito tras compra
+        cart.items = [];
+        cart.notify();
+        // Cerrar offcanvas
+        const cartCanvas = document.getElementById('cartCanvas');
+        const bsOffcanvas = bootstrap.Offcanvas.getInstance(cartCanvas);
+        if (bsOffcanvas) bsOffcanvas.hide();
+      }
+    });
   }
 
   // --- OBTENCIÓN Y RENDERIZADO DEL CATÁLOGO ---
